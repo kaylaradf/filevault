@@ -1,0 +1,4 @@
+python -m venv .venv (Kalau Belum Ada)
+.venv/Scripts/activate
+pip install requirements.txt
+Buat dan isi database sesuai script
