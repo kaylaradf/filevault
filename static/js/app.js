@@ -54,7 +54,8 @@
     }
 
     /**
-     * Memperbarui access token menggunakan refresh token.
+     * Memperbarui access token menggunakan refresh token (dengan rotation).
+     * Refresh token lama otomatis di-blocklist oleh server, diganti token baru.
      * @returns {Promise<boolean>} True jika berhasil, false jika gagal.
      */
     async function refreshToken() {
@@ -69,6 +70,7 @@
             if (res.ok) {
                 const data = await res.json();
                 state.accessToken = data.access_token;
+                state.refreshToken = data.refresh_token;
                 return true;
             }
         } catch (_) { /* ignore */ }
@@ -317,11 +319,14 @@
         }
     }
 
-    /** Melakukan proses logout. */
+    /** Melakukan proses logout. Mengirim refresh token agar ikut di-blocklist oleh server. */
     async function logout() {
         if (state.accessToken) {
             try {
-                await api("/api/auth/logout", { method: "POST" });
+                await api("/api/auth/logout", {
+                    method: "POST",
+                    body: JSON.stringify({ refresh_token: state.refreshToken }),
+                });
             } catch (_) { /* ignore */ }
         }
 
