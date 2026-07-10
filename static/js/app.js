@@ -801,24 +801,34 @@
     function renderLoginPage() {
         return `
         <div class="auth-container">
-            <div class="auth-card">
-                <h2>Masuk</h2>
-                <p class="auth-subtitle">Masuk ke akun file manager Anda</p>
-                <form id="login-form" autocomplete="off">
-                    <div class="form-group">
-                        <label for="login-username">Username</label>
-                        <input type="text" id="login-username" class="form-input"
-                            placeholder="Masukkan username" autocomplete="username" required>
+            <div class="auth-card terminal-window">
+                <div class="terminal-titlebar">
+                    <div class="terminal-dots">
+                        <div class="terminal-dot close"></div>
+                        <div class="terminal-dot minimize"></div>
+                        <div class="terminal-dot maximize"></div>
                     </div>
-                    <div class="form-group">
-                        <label for="login-password">Password</label>
-                        <input type="password" id="login-password" class="form-input"
-                            placeholder="Masukkan password" autocomplete="current-password" required>
+                    <div class="terminal-title">filevault — login</div>
+                </div>
+                <div class="terminal-body">
+                    <h2>$ login<span class="cursor-blink"></span></h2>
+                    <p class="auth-subtitle">Autentikasi ke FileVault</p>
+                    <form id="login-form" autocomplete="off">
+                        <div class="form-group">
+                            <label for="login-username">username</label>
+                            <input type="text" id="login-username" class="form-input"
+                                placeholder="ketik username" autocomplete="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">password</label>
+                            <input type="password" id="login-password" class="form-input"
+                                placeholder="ketik password" autocomplete="current-password" required>
+                        </div>
+                        <button type="submit" id="login-btn" class="btn btn-primary btn-block">→ Masuk</button>
+                    </form>
+                    <div class="auth-links">
+                        Belum punya akun? <a id="goto-register">register</a>
                     </div>
-                    <button type="submit" id="login-btn" class="btn btn-primary btn-block">Masuk</button>
-                </form>
-                <div class="auth-links">
-                    Belum punya akun? <a id="goto-register">Daftar di sini</a>
                 </div>
             </div>
         </div>`;
@@ -828,34 +838,44 @@
     function renderRegisterPage() {
         return `
         <div class="auth-container">
-            <div class="auth-card">
-                <h2>Daftar Akun</h2>
-                <p class="auth-subtitle">Buat akun baru untuk mulai mengelola file</p>
-                <form id="register-form" autocomplete="off">
-                    <div class="form-group">
-                        <label for="reg-username">Username</label>
-                        <input type="text" id="reg-username" class="form-input"
-                            placeholder="3-50 karakter" autocomplete="username" required>
+            <div class="auth-card terminal-window">
+                <div class="terminal-titlebar">
+                    <div class="terminal-dots">
+                        <div class="terminal-dot close"></div>
+                        <div class="terminal-dot minimize"></div>
+                        <div class="terminal-dot maximize"></div>
                     </div>
-                    <div class="form-group">
-                        <label for="reg-email">Email</label>
-                        <input type="email" id="reg-email" class="form-input"
-                            placeholder="email@contoh.com" autocomplete="email" required>
+                    <div class="terminal-title">filevault — register</div>
+                </div>
+                <div class="terminal-body">
+                    <h2>$ register<span class="cursor-blink"></span></h2>
+                    <p class="auth-subtitle">Buat akun baru</p>
+                    <form id="register-form" autocomplete="off">
+                        <div class="form-group">
+                            <label for="reg-username">username</label>
+                            <input type="text" id="reg-username" class="form-input"
+                                placeholder="3-50 karakter" autocomplete="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-email">email</label>
+                            <input type="email" id="reg-email" class="form-input"
+                                placeholder="email@contoh.com" autocomplete="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-password">password</label>
+                            <input type="password" id="reg-password" class="form-input"
+                                placeholder="minimal 6 karakter" autocomplete="new-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-confirm-password">confirm_password</label>
+                            <input type="password" id="reg-confirm-password" class="form-input"
+                                placeholder="ulangi password" autocomplete="new-password" required>
+                        </div>
+                        <button type="submit" id="register-btn" class="btn btn-primary btn-block">→ Daftar</button>
+                    </form>
+                    <div class="auth-links">
+                        Sudah punya akun? <a id="goto-login">login</a>
                     </div>
-                    <div class="form-group">
-                        <label for="reg-password">Password</label>
-                        <input type="password" id="reg-password" class="form-input"
-                            placeholder="Minimal 6 karakter" autocomplete="new-password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-confirm-password">Konfirmasi Password</label>
-                        <input type="password" id="reg-confirm-password" class="form-input"
-                            placeholder="Ulangi password" autocomplete="new-password" required>
-                    </div>
-                    <button type="submit" id="register-btn" class="btn btn-primary btn-block">Daftar</button>
-                </form>
-                <div class="auth-links">
-                    Sudah punya akun? <a id="goto-login">Masuk di sini</a>
                 </div>
             </div>
         </div>`;
@@ -869,21 +889,21 @@
 
         navbar.innerHTML = `
             <div class="navbar-brand" onclick="window._app.navigate('files')">
-                <div class="brand-icon">☁</div>
-                <span>FileVault</span>
+                <span class="brand-icon">▸</span>
+                <span>filevault</span>
             </div>
             <nav class="navbar-nav">
                 <button class="nav-link ${state.currentPage === 'files' ? 'active' : ''}"
-                    onclick="window._app.navigate('files')">📁 File Saya</button>
+                    onclick="window._app.navigate('files')">~/files</button>
                 ${u.role === "admin" ? `
                 <button class="nav-link ${state.currentPage === 'admin' ? 'active' : ''}"
-                    onclick="window._app.navigate('admin')">👥 Kelola User</button>` : ""}
+                    onclick="window._app.navigate('admin')">~/admin</button>` : ""}
                 <div class="nav-user-info">
                     <div class="nav-user-avatar">${initial}</div>
                     <span>${escapeHtml(u.username)}</span>
                     <span class="nav-role-badge ${u.role}">${u.role}</span>
                 </div>
-                <button class="nav-link" onclick="window._app.logout()">🚪 Keluar</button>
+                <button class="nav-link" onclick="window._app.logout()">exit</button>
             </nav>
         `;
     }
@@ -894,7 +914,7 @@
         <div class="main-content">
             <div class="page-header">
                 <div>
-                    <h1>📁 File Manager</h1>
+                    <h1>~/files<span class="cursor-blink"></span></h1>
                     <p class="header-subtitle">Kelola file Anda dengan aman</p>
                 </div>
             </div>
@@ -904,53 +924,63 @@
                     <div class="stat-icon purple">📄</div>
                     <div class="stat-info">
                         <h3 id="stat-total-files">—</h3>
-                        <p>Total File</p>
+                        <p>total_files</p>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon cyan">💾</div>
                     <div class="stat-info">
                         <h3 id="stat-total-size">—</h3>
-                        <p>Total Ukuran</p>
+                        <p>total_size</p>
                     </div>
                 </div>
             </div>
 
             <!-- Upload Zone -->
             <div class="upload-zone" id="upload-zone">
-                <div class="upload-icon">☁️</div>
+                <div class="upload-icon">↑</div>
                 <p><strong>Drag & drop file di sini</strong> atau klik untuk memilih</p>
-                <p class="upload-hint">Maksimal 50 MB per file</p>
+                <p class="upload-hint">max_size: 50MB</p>
                 <input type="file" id="file-input" style="display:none" multiple>
             </div>
 
             <!-- Upload Progress -->
             <div class="upload-progress-container" id="upload-progress">
-                <span id="progress-text" style="font-size:var(--font-size-sm);color:var(--text-secondary)">Mengupload...</span>
+                <span id="progress-text" style="font-size:var(--font-size-sm);color:var(--text-secondary)">uploading...</span>
                 <div class="progress-bar-wrapper">
                     <div class="progress-bar-fill" id="progress-bar-fill"></div>
                 </div>
             </div>
 
             <!-- File List -->
-            <div class="file-table-container">
-                <table class="file-table">
-                    <thead>
-                        <tr>
-                            <th>Nama File</th>
-                            <th>Ukuran</th>
-                            <th>Tipe</th>
-                            <th>Uploader</th>
-                            <th>Tanggal Upload</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="file-list-body">
-                        <tr><td colspan="6">
-                            <div class="loading-overlay"><span class="spinner"></span> Memuat...</div>
-                        </td></tr>
-                    </tbody>
-                </table>
+            <div class="terminal-window">
+                <div class="terminal-titlebar">
+                    <div class="terminal-dots">
+                        <div class="terminal-dot close"></div>
+                        <div class="terminal-dot minimize"></div>
+                        <div class="terminal-dot maximize"></div>
+                    </div>
+                    <div class="terminal-title">ls -la ~/files</div>
+                </div>
+                <div style="overflow-x:auto">
+                    <table class="file-table">
+                        <thead>
+                            <tr>
+                                <th>filename</th>
+                                <th>size</th>
+                                <th>type</th>
+                                <th>owner</th>
+                                <th>modified</th>
+                                <th>actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="file-list-body">
+                            <tr><td colspan="6">
+                                <div class="loading-overlay"><span class="spinner"></span> loading...</div>
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>`;
     }
@@ -961,11 +991,11 @@
         <div class="main-content">
             <div class="page-header">
                 <div>
-                    <h1>👥 Kelola User</h1>
+                    <h1>~/admin<span class="cursor-blink"></span></h1>
                     <p class="header-subtitle">Manajemen user dan kontrol akses</p>
                 </div>
                 <button class="btn btn-primary" onclick="window._app.showCreateUserModal()">
-                    ➕ Tambah User
+                    + useradd
                 </button>
             </div>
 
@@ -974,28 +1004,38 @@
                     <div class="stat-icon orange">👤</div>
                     <div class="stat-info">
                         <h3 id="stat-total-users">—</h3>
-                        <p>Total User</p>
+                        <p>total_users</p>
                     </div>
                 </div>
             </div>
 
-            <div class="user-table-container">
-                <table class="user-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="user-list-body">
-                        <tr><td colspan="5">
-                            <div class="loading-overlay"><span class="spinner"></span> Memuat...</div>
-                        </td></tr>
-                    </tbody>
-                </table>
+            <div class="terminal-window">
+                <div class="terminal-titlebar">
+                    <div class="terminal-dots">
+                        <div class="terminal-dot close"></div>
+                        <div class="terminal-dot minimize"></div>
+                        <div class="terminal-dot maximize"></div>
+                    </div>
+                    <div class="terminal-title">cat /etc/passwd — user management</div>
+                </div>
+                <div style="overflow-x:auto">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>uid</th>
+                                <th>username</th>
+                                <th>email</th>
+                                <th>role</th>
+                                <th>actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-list-body">
+                            <tr><td colspan="5">
+                                <div class="loading-overlay"><span class="spinner"></span> loading...</div>
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>`;
     }
