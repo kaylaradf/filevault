@@ -7,6 +7,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
+    decode_token,
     get_jwt,
     get_jwt_identity,
     jwt_required,
@@ -112,8 +113,16 @@ def login():
 @auth_bp.route("/refresh", methods=["POST"])
 @jwt_required(refresh=True)
 def refresh():
-    """Membuat access token baru menggunakan refresh token yang valid."""
+    """Membuat access token dan refresh token baru (refresh token rotation).
+
+    Refresh token lama otomatis di-blocklist sehingga tidak bisa dipakai ulang.
+    Ini mencegah serangan replay jika refresh token dicuri.
+    """
     identity = get_jwt_identity()
+    old_jti = get_jwt()["jti"]
+
+    # Blocklist refresh token lama (single-use)
+    db.execute("INSERT INTO token_blocklist (jti) VALUES (%s)", (old_jti,))
 
     # Ambil data user terbaru dari DB untuk memastikan role masih valid
     user = db.fetch_one("SELECT id, username, role FROM users WHERE id = %s", (identity,))
@@ -125,16 +134,43 @@ def refresh():
         identity=identity,
         additional_claims=additional_claims,
     )
+    new_refresh_token = create_refresh_token(
+        identity=identity,
+        additional_claims=additional_claims,
+    )
 
-    return jsonify({"access_token": new_access_token}), 200
+    return jsonify({
+        "access_token": new_access_token,
+        "refresh_token": new_refresh_token,
+    }), 200
 
 
 @auth_bp.route("/logout", methods=["POST"])
 @jwt_required()
 def logout():
-    """Logout dengan menambahkan JTI token ke blocklist."""
-    jti = get_jwt()["jti"]
-    db.execute("INSERT INTO token_blocklist (jti) VALUES (%s)", (jti,))
+    """Logout dengan menambahkan JTI access token ke blocklist.
+
+    Jika refresh_token dikirim di body, juga akan di-blocklist
+    agar tidak bisa dipakai untuk generate token baru.
+    """
+    # Blocklist access token yang sedang dipakai
+    access_jti = get_jwt()["jti"]
+    db.execute("INSERT INTO token_blocklist (jti) VALUES (%s)", (access_jti,))
+
+    # Blocklist refresh token jika dikirim di body
+    data = request.get_json(silent=True) or {}
+    refresh_token_str = data.get("refresh_token")
+    if refresh_token_str:
+        try:
+            decoded = decode_token(refresh_token_str)
+            refresh_jti = decoded["jti"]
+            db.execute(
+                "INSERT IGNORE INTO token_blocklist (jti) VALUES (%s)",
+                (refresh_jti,),
+            )
+        except Exception:
+            pass  # Token tidak valid, abaikan (sudah expired / rusak)
+
     return jsonify({"message": "Logout berhasil."}), 200
 
 
@@ -153,3 +189,4 @@ def me():
     user["created_at"] = user["created_at"].isoformat() if user["created_at"] else None
 
     return jsonify({"user": user}), 200
+
